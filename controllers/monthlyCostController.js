@@ -5,7 +5,7 @@ const monthlyCostPage = async (req, res) => {
     const options = { _id: 1, name: 1, surname: 1};
     const data = await User.find({}, options);
     console.log(data);
-    res.render("pages/actions/costs", {title: "Koszty", users: data});
+    res.render("pages/actions/costs", {users: data});
 };
 
 const addNewUser = async (req, res) => {

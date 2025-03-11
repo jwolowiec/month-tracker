@@ -1,5 +1,5 @@
 const calendarPage = (req, res) => {
-    res.render("pages/actions/calendar", {title: "Koszty"});
+    res.render("pages/actions/calendar");
 };
 
 export const calendarController = {
