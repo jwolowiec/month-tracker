@@ -37,6 +37,7 @@ app.use("/author", authorRoutes);
 app.use("/auth", authRoutes);
 
 app.use(errorHandler.notFound);
+app.use(errorHandler.errorHandlerMiddleware);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

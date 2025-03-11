@@ -1,10 +1,20 @@
 const notFound = (req, res, next) => {
-    res.status(404).render("pages/errors/notFound");
+    const error = new Error("Page not found");
+    error.status = 404;
+    next(error);
 };
 
 const errorHandlerMiddleware = (err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).render("pages/errors/serverError.ejs");
+
+    const statusCode = err.status || 500; // Jeśli nie ma statusu, ustawiamy 500
+    const errorMessage = err.message || "Internal server error";
+
+    if (statusCode === 404) {
+        res.status(statusCode).render("pages/errors/notFound", { error: errorMessage });
+    } else {
+        res.status(statusCode).render("pages/errors/serverError", { error: errorMessage });
+    }
 };
 
 export const errorHandler = {
