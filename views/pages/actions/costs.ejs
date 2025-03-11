@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../partials/head"); %>
+</head>
+<body>
+    <%- include("../../partials/header"); %>
+
+    <main>
+        <h1>Witamy na stronie kosztów</h1>
+        <form method="post" action="/costs/add-cost">
+            <label for="name">Nazwa kosztu</label>
+            <input type="text" id="name" name="name">
+            <label for="description">Opis</label>
+            <input type="text" id="description" name="description">
+            <label for="cost">Nazwa kosztu</label>
+            <input type="number" id="cost" name="cost">
+            <label for="user">Powiązany użytkownik</label>
+            <select id="user" name="user">
+                <% for (let i = 0; i < users.length; i++) { %>
+                    <option value="<%= users[i]._id %>"><%= users[i].name + " " + users[i].surname %></option>
+                <% } %>
+            </select>
+            <button type="submit">Wyślij</button>
+        </form>
+    </main>
+
+    <%- include("../../partials/footer"); %>
+</body>
+</html>
