@@ -8,6 +8,9 @@ import monthlyCostRoutes from "./routes/monthlyCostRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import errorRoutes from "./routes/errorRoutes.js";
 import {errorHandler} from "./middleware/errorHandler.js";
+import cookieParser from 'cookie-parser';
+import {auth} from "./middleware/auth.js";
+import {userMiddleware} from "./middleware/userMiddleware.js";
 
 const port = process.env.PORT;
 const app = express();
@@ -15,6 +18,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // try {
 //     await connectToDB();
@@ -30,9 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 // }
 
 await connectToDB();
+app.use(userMiddleware.setUser);
 app.use("/", homeRoutes);
-app.use("/costs", monthlyCostRoutes);
-app.use("/calendar", calendarRoutes);
+app.use("/costs", auth.authUser, monthlyCostRoutes);
+app.use("/calendar", auth.authUser, calendarRoutes);
 app.use("/author", authorRoutes);
 app.use("/auth", authRoutes);
 

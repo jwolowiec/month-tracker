@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../partials/head"); %>
+    <title>Zarejestruj się</title>
+</head>
+<body>
+<main>
+    <h1>Witamy na stronie rejestracji</h1>
+    <form method="post" action="/auth/register">
+        <label for="name">Imię:</label>
+        <input type="text" name="name" id="name">
+        <label for="surname">Nazwisko:</label>
+        <input type="text" name="surname" id="surname">
+        <label for="mail">Email:</label>
+        <input type="email" name="mail" id="mail">
+        <label for="password">Hasło:</label>
+        <input type="password" name="password" id="password">
+        <input type="submit" value="Zaloguj">
+    </form>
+    <a href="/">Strona główna</a>
+    <a href="/auth/login">Zaloguj się się</a>
+</main>
+</body>
+</html>
