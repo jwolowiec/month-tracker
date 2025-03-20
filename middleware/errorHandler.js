@@ -13,7 +13,7 @@ const errorHandlerMiddleware = (err, req, res, next) => {
     if (statusCode === 404) {
         res.status(statusCode).render("pages/errors/notFound", { error: errorMessage });
     } else {
-        res.status(statusCode).render("pages/errors/serverError", { error: errorMessage });
+        res.status(statusCode).render("pages/errors/serverError", { status: statusCode, error: errorMessage });
     }
 };
 

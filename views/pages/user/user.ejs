@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../partials/head"); %>
+    <title>Konto</title>
+</head>
+<body>
+    <%- include("../../partials/header"); %>
+
+<main>
+    <h1>Witaj na stronie konto</h1>
+    <h2><%= user.name + " " + user.surname %></h2>
+    <h3><%= user.mail %></h3>
+</main>
+
+    <%- include("../../partials/footer"); %>
+</body>
+</html>

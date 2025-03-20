@@ -6,11 +6,11 @@ import authRoutes from "./routes/authRoutes.js";
 import authorRoutes from "./routes/authorRoutes.js";
 import monthlyCostRoutes from "./routes/monthlyCostRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
-import errorRoutes from "./routes/errorRoutes.js";
 import {errorHandler} from "./middleware/errorHandler.js";
 import cookieParser from 'cookie-parser';
 import {auth} from "./middleware/auth.js";
 import {userMiddleware} from "./middleware/userMiddleware.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const port = process.env.PORT;
 const app = express();
@@ -40,6 +40,7 @@ app.use("/costs", auth.authUser, monthlyCostRoutes);
 app.use("/calendar", auth.authUser, calendarRoutes);
 app.use("/author", authorRoutes);
 app.use("/auth", authRoutes);
+app.use("/user", auth.authUser, userRoutes);
 
 app.use(errorHandler.notFound);
 app.use(errorHandler.errorHandlerMiddleware);

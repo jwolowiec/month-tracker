@@ -22,13 +22,13 @@ const authLogin = async (req, res, next) => {
         const valid = await bcrypt.compare(password, user.password);
 
         if (valid) {
-            const token = authService.generateAccessToken(user._id);
+            const token = authService.generateAccessToken(user);
 
             const cookie = {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "Strict",
-                maxAge: 24 * 60 * 60
+                maxAge: 60 * 60 * 1000
             };
 
             return res.cookie("authToken", token, cookie).redirect("/");
@@ -62,15 +62,14 @@ const authRegister = async (req, res, next) => {
 
         const savedUser = await User.create({ name, surname, mail, password: hashedPassword });
 
-        const token = authService.generateAccessToken(savedUser._id);
+        const token = authService.generateAccessToken(savedUser);
 
         const cookie = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
-            maxAge: 24 * 60 * 60
+            maxAge: 60 * 60 * 1000
         };
-        //res.redirect(`/auth/login?mail=${mail}&message=Pomyślnie zarejestrowano użytkownika`);
 
         res.cookie("authToken", token, cookie);
         res.redirect(`/`);
