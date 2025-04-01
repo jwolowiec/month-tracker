@@ -10,6 +10,7 @@ router.post("/login", validateMiddleware.validateLogin, authController.authLogin
 router.get("/register", authController.registerPage);
 router.post("/register", validateMiddleware.validateRegister, authController.authRegister);
 
+router.post("/refresh", authController.refreshAuthToken);
 router.get("/logout", authController.logOut);
 
 export default router;

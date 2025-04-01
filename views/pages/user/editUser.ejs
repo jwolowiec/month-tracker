@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../partials/head"); %>
+    <title>Konto</title>
+</head>
+<body>
+<%- include("../../partials/header"); %>
+
+<main>
+    <h1>Witaj na stronie edycji konta</h1>
+    <form method="post" action="/user/edit">
+        <label for="name">Imię:</label>
+        <input type="text" name="name" id="name" value="<%= user.name %>">
+        <label for="surname">Nazwisko:</label>
+        <input type="text" name="surname" id="surname" value="<%= user.surname %>">
+        <label for="mail">Email:</label>
+        <input type="email" name="mail" id="mail" value="<%= user.mail %>">
+        <input type="submit" value="Zapisz dane">
+    </form>
+</main>
+
+<%- include("../../partials/footer"); %>
+</body>
+</html>
