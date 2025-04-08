@@ -1,8 +1,10 @@
-import jwt from "jsonwebtoken";
+import AuthService from "../services/authService.js";
+
+const authService = new AuthService();
 
 const setUser = async (req, res, next) => {
-    let tokenChange = false;
-    let authToken = req.cookies.authToken;
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
     req.user = null;
     res.locals.user = null;
 
@@ -11,28 +13,16 @@ const setUser = async (req, res, next) => {
     }
 
     try {
-        if (!authToken) {
-            const response = await fetch(req.protocol + "://" + req.get("host") + "/auth/refresh", {
-                method: "post",
-                credentials: "include",
-                headers: { "Content-Type": "application/json", "Cookie": `refreshToken=${req.cookies.refreshToken}`},
-            });
-            const data = await response.json();
-            if (data.message) {
-                return next();
-            }
-            authToken = data.authToken;
-            tokenChange = true;
-        }
+        const url = req.protocol + "://" + req.get("host") + "/auth/refresh";
 
-        const authTokenDecoded = jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET);
+        const {validAccessToken, accessTokenDecoded} = await authService.authentication(accessToken, refreshToken, url);
 
-        if (authTokenDecoded) {
-            req.user = authTokenDecoded.user;
-            res.locals.user = authTokenDecoded.user;
+        if (accessTokenDecoded) {
+            req.user = accessTokenDecoded.user;
+            res.locals.user = accessTokenDecoded.user;
 
-            if (tokenChange) {
-                res.cookie("authToken", authToken, {
+            if (!accessToken) {
+                res.cookie("accessToken", validAccessToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === "production",
                     sameSite: "Strict",
@@ -40,7 +30,7 @@ const setUser = async (req, res, next) => {
                 });
             }
         }
-        next();
+        return next();
     } catch (e) {
         req.user = null;
         res.locals.user = null;

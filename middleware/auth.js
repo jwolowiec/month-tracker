@@ -1,5 +1,3 @@
-import jwt from "jsonwebtoken";
-
 const authUser = (req, res, next) => {
     if (!req.user) {
         const error = new Error("Missing auth token or wrong token");

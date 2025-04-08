@@ -11,7 +11,7 @@ import cookieParser from 'cookie-parser';
 import {auth} from "./middleware/auth.js";
 import {userMiddleware} from "./middleware/userMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
-import cors from "cors";
+import "./utils/removeExpiredTokens.js";
 
 const port = process.env.PORT;
 const app = express();

@@ -1,8 +1,6 @@
-import bcrypt from "bcrypt";
-import User from "../models/User.js";
-import {authService} from "../services/auth.js";
-import RefreshToken from "../models/RefreshToken.js";
-import jwt from "jsonwebtoken";
+import AuthService from "../services/authService.js";
+
+const authService = new AuthService();
 
 const loginPage = (req, res) => {
     const mail = req.query.mail || "";
@@ -13,34 +11,11 @@ const loginPage = (req, res) => {
 
 const authLogin = async (req, res, next) => {
     const {mail, password} = req.body;
+    const deviceInfo = req.headers["user-agent"];
     try {
-        const user = await User.findOne({mail: mail});
+        const {accessToken, refreshToken} = await authService.login(mail, password, deviceInfo);
 
-        if (!user) {
-            return res.redirect(`/auth/login?mail=${mail}&message=Użytkownik nie istnieje. Zarejestruj się.`);
-        }
-
-        const valid = await bcrypt.compare(password, user.password);
-
-        if (!valid) {
-            const error = new Error("Wrong password");
-            error.status = 401;
-            return next(error);
-        }
-
-        const deviceInfo = req.headers["user-agent"];
-        await RefreshToken.updateOne({userId: user._id, deviceInfo: deviceInfo}, {expired: true});
-
-        const refreshToken = authService.generateRefreshToken(user._id);
-        await RefreshToken.create({
-            userId: user._id,
-            token: refreshToken,
-            deviceInfo: deviceInfo
-        });
-
-        const token = authService.generateAccessToken(user);
-
-        res.cookie("authToken", token, {
+        res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
@@ -65,28 +40,12 @@ const registerPage = (req, res) => {
 };
 
 const authRegister = async (req, res, next) => {
-    const {name, surname, mail, password} = req.body;
+    const user = req.body;
+    const deviceInfo = req.headers["user-agent"];
     try {
-        const user = await User.findOne({mail: mail});
+        const {accessToken, refreshToken} = authService.register(user, deviceInfo);
 
-        if (user) {
-            return res.redirect(`/auth/login?mail=${mail}&message=Użytkownik już istnieje. Zaloguj się.`);
-        }
-
-        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT));
-        const savedUser = await User.create({ name, surname, mail, password: hashedPassword });
-        const deviceInfo = req.headers["user-agent"];
-        const refreshToken = authService.generateRefreshToken(savedUser._id);
-
-        await RefreshToken.create({
-            userId: savedUser._id,
-            token: refreshToken,
-            deviceInfo: deviceInfo,
-        });
-
-        const authToken = authService.generateAccessToken(savedUser);
-
-        res.cookie("authToken", authToken, {
+        res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
@@ -106,36 +65,15 @@ const authRegister = async (req, res, next) => {
 };
 
 const refreshAuthToken = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
     try {
-        const refreshToken = req.cookies.refreshToken;
-        if (!refreshToken) {
-            return res.status(400).json({message: "Missing refresh token"});
+        const result = await authService.refreshAccessToken(refreshToken);
+
+        if (!result.token) {
+            return res.status(result.status).json({message: result.message});
         }
 
-        const refreshTokenDB = await RefreshToken.findOne({
-            token: refreshToken,
-            $or: [
-                {expireTime: {$gte: new Date()}},
-                {expired: false},
-            ]
-        }).populate("userId");
-
-        if (!refreshTokenDB) {
-            return res.status(401).json({message: "Expired refresh token in database"});
-        }
-
-        if (!refreshTokenDB.userId) {
-            return res.status(401).json({message: "Expired refresh token in database"});
-        }
-
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-        if (!decoded) {
-            return res.status(401).json({message: "Invalid refresh token"});
-        }
-
-        const authToken = authService.generateAccessToken(refreshTokenDB.userId)
-
-        res.json({authToken: authToken})
+        res.json({accessToken: result.token})
     } catch (e) {
         res.status(401).json({message: e.message});
     }
@@ -144,12 +82,12 @@ const refreshAuthToken = async (req, res) => {
 const logOut = async (req, res, next) => {
     const refreshToken = req.cookies.refreshToken;
     try {
-        await RefreshToken.updateOne({token: refreshToken}, {expired: true})
+        await authService.logOut(refreshToken);
     } catch (e) {
         const error = new Error(e);
         next(error);
     }
-    res.clearCookie("authToken");
+    res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     res.redirect("/");
 };

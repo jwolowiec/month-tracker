@@ -1,4 +1,6 @@
-import User from "../models/User.js";
+import UserService from "../services/userService.js";
+
+const userService = new UserService();
 
 const userPage = (req, res) => {
     const user = req.user;
@@ -11,11 +13,11 @@ const editUserPage = (req, res) => {
 };
 
 const editUser = async (req, res, next) => {
-    const user = req.body;
-
+    const userId = req.user._id;
+    const userNewData = req.body;
     try {
-        console.log(user);
-        await User.save(user);
+        await userService.editUserData(userId, userNewData);
+        res.clearCookie("accessToken");
         res.redirect("/user");
     } catch (error) {
         next(error);
