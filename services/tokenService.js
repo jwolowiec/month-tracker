@@ -2,40 +2,35 @@ import jwt from "jsonwebtoken";
 import RefreshToken from "../models/RefreshToken.js";
 
 export default class TokenService {
-    constructor(user, deviceInfo) {
-        this.user = user;
-        this.deviceInfo = deviceInfo;
-    }
-
     generateAccessToken = (user) => {
-        return jwt.sign({ user: this.user || user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+        return jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
     };
 
     verifyAccessToken = (accessToken) => {
         return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     };
 
-    generateRefreshToken = () => {
-        return jwt.sign({ id: this.user.id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+    generateRefreshToken = (userId) => {
+        return jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
     };
 
     verifyRefreshToken = (refreshToken) => {
         return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     };
 
-    expireOldRefreshToken = async () => {
-        await RefreshToken.updateOne({ userId: this.user.id, deviceInfo: this.deviceInfo }, { expired: true });
+    expireOldRefreshToken = async (userId, deviceInfo) => {
+        await RefreshToken.updateOne({ userId, deviceInfo }, { expired: true });
     };
 
     expireRefreshTokenByLogOut = async (refreshToken) => {
         await RefreshToken.updateOne({token: refreshToken}, {expired: true});
     };
 
-    saveNewRefreshToken = async (refreshToken) => {
+    saveNewRefreshToken = async (userId, deviceInfo, refreshToken) => {
         await RefreshToken.create({
-            userId: this.user._id,
+            userId,
             token: refreshToken,
-            deviceInfo: this.deviceInfo
+            deviceInfo
         });
     };
 
@@ -49,5 +44,13 @@ export default class TokenService {
         }).populate("userId");
     };
 
+    removeAllExpiredRefreshTokens = async () => {
+        await RefreshToken.deleteMany({
+            $or: [
+                {expireTime: {$lt: new Date()}},
+                {expired: true}
+            ]
+        });
+    };
 
 }

@@ -1,6 +1,4 @@
-import AuthService from "../services/authService.js";
-
-const authService = new AuthService();
+import {authService} from "../services.js";
 
 const setUser = async (req, res, next) => {
     const accessToken = req.cookies.accessToken;
@@ -8,12 +6,12 @@ const setUser = async (req, res, next) => {
     req.user = null;
     res.locals.user = null;
 
-    if (req.path === "/auth/refresh") {
+    if (req.path === "/authMiddleware/refresh") {
         return next();
     }
 
     try {
-        const url = req.protocol + "://" + req.get("host") + "/auth/refresh";
+        const url = req.protocol + "://" + req.get("host") + "/authMiddleware/refresh";
 
         const {validAccessToken, accessTokenDecoded} = await authService.authentication(accessToken, refreshToken, url);
 

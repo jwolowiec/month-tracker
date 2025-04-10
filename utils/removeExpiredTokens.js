@@ -1,14 +1,9 @@
-import RefreshToken from "../models/RefreshToken.js";
 import cron from "node-cron";
+import {tokenService} from "../services.js";
 
 const removeExpiredTokens = async () => {
     try {
-        await RefreshToken.deleteMany({
-            $or: [
-                {expireTime: {$lt: new Date()}},
-                {expired: true}
-            ]
-        });
+        await tokenService.removeAllExpiredRefreshTokens();
     } catch (e) {
         throw new Error(e);
     }

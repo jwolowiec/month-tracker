@@ -30,7 +30,22 @@ const validateRegister = [
     }
 ];
 
+const validateCost = [
+    body("name").notEmpty().withMessage("Nazwa kosztu jest wymagana"),
+    body("cost").notEmpty().withMessage("Wprowadzenie kosztu jest wymagane"),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const error = new Error("Validation error");
+            error.status = 400;
+            return next(error);
+        }
+        next()
+    }
+];
+
 export const validateMiddleware = {
     validateLogin,
     validateRegister,
+    validateCost,
 };

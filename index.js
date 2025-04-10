@@ -8,7 +8,7 @@ import monthlyCostRoutes from "./routes/monthlyCostRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import {errorHandler} from "./middleware/errorHandler.js";
 import cookieParser from 'cookie-parser';
-import {auth} from "./middleware/auth.js";
+import {authMiddleware} from "./middleware/authMiddleware.js";
 import {userMiddleware} from "./middleware/userMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import "./utils/removeExpiredTokens.js";
@@ -27,7 +27,7 @@ app.use(cookieParser());
 //     app.use("/costs", monthlyCostRoutes);
 //     app.use("/calendar", calendarRoutes);
 //     app.use("/author", authorRoutes);
-//     app.use("/auth", authRoutes);
+//     app.use("/authMiddleware", authRoutes);
 // } catch (e) {
 //     app.use("/*", (req, res) => {
 //         res.status(500).send("nie");
@@ -37,11 +37,11 @@ app.use(cookieParser());
 await connectToDB();
 app.use(userMiddleware.setUser);
 app.use("/", homeRoutes);
-app.use("/costs", auth.authUser, monthlyCostRoutes);
-app.use("/calendar", auth.authUser, calendarRoutes);
+app.use("/costs", authMiddleware.authUser, monthlyCostRoutes);
+app.use("/calendar", authMiddleware.authUser, calendarRoutes);
 app.use("/author", authorRoutes);
 app.use("/auth", authRoutes);
-app.use("/user", auth.authUser, userRoutes);
+app.use("/user", authMiddleware.authUser, userRoutes);
 
 app.use(errorHandler.notFound);
 app.use(errorHandler.errorHandlerMiddleware);

@@ -1,6 +1,4 @@
-import UserService from "../services/userService.js";
-
-const userService = new UserService();
+import {userService} from "../services.js";
 
 const userPage = (req, res) => {
     const user = req.user;

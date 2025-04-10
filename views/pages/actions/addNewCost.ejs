@@ -10,6 +10,21 @@
     <main>
         <h1>Witamy na stronie dodawania kosztów</h1>
 
+        <form method="post" action="/costs/add-cost">
+            <label for="name">Podaj nazwę</label>
+            <input type="text" id="name" name="name" required>
+            <label for="description">Podaj opis</label>
+            <textarea id="description" name="description"></textarea>
+            <label for="cost">Podaj koszt</label>
+            <input type="number" id="cost" name="cost" required>
+            <select name="category">
+                <% categories.forEach((category) => { %>
+                    <option value="<%= category %>" <%= category === "Nieplanowane" ? "selected" : "" %>><%= category %></option>
+                <% }) %>
+            </select>
+            <input type="submit" value="Zapisz">
+        </form>
+
     </main>
 
     <%- include("../../partials/footer"); %>

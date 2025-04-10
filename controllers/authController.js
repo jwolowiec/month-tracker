@@ -1,6 +1,4 @@
-import AuthService from "../services/authService.js";
-
-const authService = new AuthService();
+import {authService} from "../services.js";
 
 const loginPage = (req, res) => {
     const mail = req.query.mail || "";
@@ -43,7 +41,7 @@ const authRegister = async (req, res, next) => {
     const user = req.body;
     const deviceInfo = req.headers["user-agent"];
     try {
-        const {accessToken, refreshToken} = authService.register(user, deviceInfo);
+        const {accessToken, refreshToken} = await authService.register(user, deviceInfo);
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,

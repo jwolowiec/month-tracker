@@ -1,20 +1,27 @@
-import CostService from "../services/costService.js";
-
-const costService = new CostService();
+import {costService} from "../services.js";
 
 const monthlyCostPage = async (req, res, next) => {
+    const checkedCategories = req.query.categories ? Array.isArray(req.query.categories) ? req.query.categories : [req.query.categories] : [];
     const userId = req.user._id;
-    let allCosts;
+    let costs;
+    const categories = costService.getCostsCategories();
+
     try {
-        allCosts = await costService.findAllCostsByUserId(userId);
+        costs = await costService.findAllCosts(userId, checkedCategories);
     } catch (e) {
         return next(e);
     }
-    res.render("pages/actions/costs", {costs: allCosts});
+    res.render("pages/actions/costs", {costs, categories, checkedCategories});
+};
+
+const addNewCostPage = (req, res) => {
+    const categories = costService.getCostsCategories();
+    res.render("pages/actions/addNewCost", {categories});
 };
 
 const addNewCost = async (req, res, next) => {
     const cost = req.body;
+    cost.user = req.user._id;
     try {
         await costService.addNewCost(cost);
     } catch (e) {
@@ -25,5 +32,6 @@ const addNewCost = async (req, res, next) => {
 
 export const monthlyCostController = {
     monthlyCostPage,
+    addNewCostPage,
     addNewCost,
 };

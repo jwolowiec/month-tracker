@@ -9,17 +9,28 @@
 
     <main>
         <h1>Witamy na stronie kosztów</h1>
+
+        <form method="get" action="/costs" id="filterForm">
+            <% categories.forEach((category) => { %>
+                <input type="checkbox" name="categories" value="<%= category %>" <%= checkedCategories.includes(category) ? "checked" : "" %>>
+                <label><%= category %></label>
+            <% }) %>
+        </form>
+
         <% if (costs.length > 0) {
             costs.forEach((cost) => { %>
                 <h3><%= cost.name %></h3>
                 <h4><%= cost.description %></h4>
                 <p><%= cost.cost %></p>
+                <p><%= cost.category %></p>
             <% });
         } else { %>
             <p>Brak wprowadzonych kosztów</p>
         <% } %>
         <a href="/costs/add-cost">Dodaj nowy koszt</a>
     </main>
+
+    <script src="/js/costs/sendFormAfterChange.js"></script>
 
     <%- include("../../partials/footer"); %>
 </body>
