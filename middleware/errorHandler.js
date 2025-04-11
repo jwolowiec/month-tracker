@@ -11,9 +11,9 @@ const errorHandlerMiddleware = (err, req, res, next) => {
     const errorMessage = err.message || "Internal server error";
 
     if (statusCode === 404) {
-        res.status(statusCode).render("pages/errors/notFound", { error: errorMessage });
+        return res.status(statusCode).render("pages/errors/notFound", { error: errorMessage });
     } else {
-        res.status(statusCode).render("pages/errors/serverError", { status: statusCode, error: errorMessage });
+        return res.status(statusCode).render("pages/errors/serverError", { status: statusCode, error: errorMessage });
     }
 };
 

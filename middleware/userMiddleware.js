@@ -6,12 +6,12 @@ const setUser = async (req, res, next) => {
     req.user = null;
     res.locals.user = null;
 
-    if (req.path === "/authMiddleware/refresh") {
+    if (req.path === "/auth/refresh") {
         return next();
     }
 
     try {
-        const url = req.protocol + "://" + req.get("host") + "/authMiddleware/refresh";
+        const url = req.protocol + "://" + req.get("host") + "/auth/refresh";
 
         const {validAccessToken, accessTokenDecoded} = await authService.authentication(accessToken, refreshToken, url);
 
