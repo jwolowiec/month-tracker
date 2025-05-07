@@ -11,12 +11,12 @@ const monthlyCostPage = async (req, res, next) => {
     } catch (e) {
         return next(e);
     }
-    res.render("pages/actions/costs", {costs, categories, checkedCategories});
+    res.render("pages/actions/costs/costs", {costs, categories, checkedCategories});
 };
 
 const addNewCostPage = (req, res) => {
     const categories = costService.getCostsCategories();
-    res.render("pages/actions/addNewCost", {categories});
+    res.render("pages/actions/costs/addNewCost", {categories});
 };
 
 const addNewCost = async (req, res, next) => {

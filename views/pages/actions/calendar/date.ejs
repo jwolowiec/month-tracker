@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../../partials/head"); %>
+    <title>Dzień</title>
+</head>
+<body>
+<%- include("../../../partials/header"); %>
+
+<main>
+    <h1>Witamy na stronie dnia</h1>
+    <h2><%= date %></h2>
+    <% events.forEach(event => { %>
+        <h2><%= event.name %></h2>
+        <h3><%= event.description %></h3>
+        <% if (!event.date) { %>
+            <h3><%= `${event.datetimeStart.toTimeString().substring(0, 5)} - ${event.datetimeEnd.toTimeString().substring(0, 5)}` %></h3>
+        <% } %>
+        <a href="/calendar/<%= date %>/delete/<%= event._id %>">Usuń</a>
+        <a href="/calendar/<%= date %>/edit/<%= event._id %>">Edytuj</a>
+    <% }) %>
+    <a href="/calendar/<%= date %>/add-event">Dodaj nowe wydarzenie</a>
+</main>
+
+<%- include("../../../partials/footer"); %>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../../partials/head") %>
+    <link href="/css/calendar/style.css" rel="stylesheet">
+    <title>Kalendarz</title>
+</head>
+<body>
+    <%- include("../../../partials/header") %>
+
+    <main>
+        <h1>Witamy na stronie kalendarza</h1>
+        <div id="calendar-head-wrapper">
+            <% const [year, month] = currentDate.split("-"); %>
+            <a href="/calendar?date=<%= previousDate %>">Poprzedni miesiąc</a>
+            <h2 id="date"><%= month %>-<%= year %></h2>
+            <a href="/calendar?date=<%= nextDate %>">Następny miesiąc</a>
+        </div>
+        <div id="calendar">
+
+        </div>
+    </main>
+
+    <%- include("../../../partials/footer") %>
+
+    <script src="/js/calendar/drawCalendar.js"></script>
+</body>
+</html>

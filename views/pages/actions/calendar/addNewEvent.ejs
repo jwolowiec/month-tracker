@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../../partials/head"); %>
+    <link rel="stylesheet" href="/css/calendar/addEventStyle.css">
+    <title>Koszty</title>
+</head>
+<body>
+<%- include("../../../partials/header"); %>
+
+<main>
+    <h1>Witamy na stronie dodawania wydarzeń</h1>
+
+    <form method="post" action="/calendar/<%= date %>/add-event">
+        <label for="name">Podaj nazwę</label>
+        <input type="text" id="name" name="name" required>
+        <label for="description">Podaj opis</label>
+        <textarea id="description" name="description"></textarea>
+        <label for="allDay">Całodniowe</label>
+        <input type="checkbox" id="allDay" name="allDay" checked>
+        <div id="allDayEvent">
+            <label for="timeStart">Godzina rozpoczęcia</label>
+            <input type="time" id="timeStart" name="timeStart" disabled>
+            <label for="timeEnd">Godzina zakończenia</label>
+            <input type="time" id="timeEnd" name="timeEnd" disabled>
+        </div>
+        <input type="submit" value="Zapisz">
+    </form>
+
+</main>
+
+<%- include("../../../partials/footer"); %>
+
+<script src="/js/calendar/showEventForm.js"></script>
+</body>
+</html>

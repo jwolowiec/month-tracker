@@ -5,6 +5,9 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandlerMiddleware = (err, req, res, next) => {
+    if (/^\/apple-touch.*\.png$/.test(req.url) || req.url === "/favicon.ico") {
+        return res.status(204);
+    }
     console.error(err.stack);
 
     const statusCode = err.status || 500; // Jeśli nie ma statusu, ustawiamy 500

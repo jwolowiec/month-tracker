@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../../partials/head"); %>
+    <title>Koszty</title>
+</head>
+<body>
+<%- include("../../../partials/header"); %>
+
+<main>
+    <h1>Witamy na stronie edytowania wydarzenia</h1>
+
+    <form method="post" action="/calendar/<%= date %>/edit/<%= oldEvent._id %>">
+        <label for="name">Podaj nazwę</label>
+        <input type="text" id="name" name="name" value="<%= oldEvent.name %>" required>
+        <label for="description">Podaj opis</label>
+        <textarea id="description" name="description"><%= oldEvent.description %></textarea>
+        <label for="date">Podaj nową datę</label>
+        <input type="date" id="date" name="date" value="<%= date %>" required>
+        <label for="allDay">Całodniowe</label>
+        <input type="checkbox" id="allDay" name="allDay" <%= oldEvent.date ? "checked" : "" %>>
+        <div id="allDayEvent">
+            <label for="timeStart">Godzina rozpoczęcia</label>
+            <input type="time" id="timeStart" name="timeStart" value="<%= oldEvent.datetimeStart ? oldEvent.datetimeStart.toTimeString().substring(0, 5) : "" %>">
+            <label for="timeEnd">Godzina zakończenia</label>
+            <input type="time" id="timeEnd" name="timeEnd" value="<%= oldEvent.datetimeEnd ? oldEvent.datetimeEnd.toTimeString().substring(0, 5) : "" %>">
+        </div>
+        <input type="submit" value="Zapisz">
+    </form>
+
+</main>
+
+<%- include("../../../partials/footer"); %>
+
+<script src="/js/calendar/showEventForm.js"></script>
+</body>
+</html>

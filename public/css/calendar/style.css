@@ -1,0 +1,17 @@
+main{
+    display: flex;
+    flex-direction: column;
+}
+#calendar-head-wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#calendar{
+    flex: 1;
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
