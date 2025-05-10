@@ -16,32 +16,43 @@ const eventSchema = new mongoose.Schema({
     user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true}
 }, {timestamps: true});
 
-eventSchema.pre("save", function (next) {
+eventSchema.pre("validate", function (next) {
+    const errors = [];
+
     const hasDate = !!this.date;
     const hasDatetime = !!this.datetimeStart || !!this.datetimeEnd;
 
     if (hasDate && hasDatetime) {
-        this.invalidate("date", "Cannot have both 'date' and 'datetime'");
+        errors.push({ path: "date", message: "Cannot have both 'date' and 'datetime'" });
     }
 
     if (!hasDate && !hasDatetime) {
-        this.invalidate("date", "One of 'date' or 'datetime' is required");
+        errors.push({ path: "date", message: "One of 'date' or 'datetime' is required" });
     }
 
     if (!hasDate) {
         if (!this.datetimeStart) {
-            this.invalidate("datetimeStart", "'datetimeStart' is required when using datetime event");
+            errors.push({ path: "datetimeStart", message: "'datetimeStart' is required" });
         }
         if (!this.datetimeEnd) {
-            this.invalidate("datetimeEnd", "'datetimeEnd' is required when using datetime event");
+            errors.push({ path: "datetimeEnd", message: "'datetimeEnd' is required" });
         }
-        if (this.datetimeStart && this.datetimeEnd && this.datetimeStart >= this.datetimeEnd) {
-            this.invalidate("datetimeEnd", "'datetimeEnd' must be after 'datetimeStart'");
+        if (
+            this.datetimeStart &&
+            this.datetimeEnd &&
+            this.datetimeStart >= this.datetimeEnd
+        ) {
+            errors.push({ path: "datetimeEnd", message: "'datetimeEnd' must be after 'datetimeStart'" });
         }
+    }
+
+    if (errors.length > 0) {
+        errors.forEach(e => this.invalidate(e.path, e.message));
     }
 
     next();
 });
+
 
 
 export default mongoose.model("Event", eventSchema);

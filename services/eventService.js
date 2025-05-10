@@ -1,24 +1,10 @@
 import Event from "../models/Event.js";
+import {dateService} from "../services.js";
 
 export default class EventService{
-    yearAndMonthISOFormat = (year, month) => {
-        return `${year}-${String(month).padStart(2, "0")}`;
-    }
-
-    dateHandler = (date) => {
-        const [year, month, day] = date.split("-");
-        return new Date(year, month - 1, day);
-    };
-
-    datetimeHandler = (dateObj, time) => {
-        const [hours, min] = time.split(":").map(data => {return parseInt(String(data))});
-        const datetime = new Date(dateObj);
-        datetime.setHours(hours, min);
-        return datetime;
-    }
 
     findAllEvents = (userId, date) => {
-        const dateObjStart = this.dateHandler(date);
+        const dateObjStart = dateService.dateHandler(date);
         const dateObjEnd = new Date(dateObjStart);
         dateObjEnd.setHours(dateObjStart.getHours() + 24);
         return Event.find({
@@ -31,13 +17,13 @@ export default class EventService{
 
     addNewEvent = async (userId, date, event) => {
         const {name, description, timeStart, timeEnd} = event;
-        const dateObj = this.dateHandler(date);
+        const dateObj = dateService.dateHandler(date);
         if (event.allDay) {
             await Event.create({name, description, user: userId, date: date});
         } else {
-            const datetimeStart = this.datetimeHandler(dateObj, timeStart);
+            const datetimeStart = dateService.datetimeHandler(dateObj, timeStart);
 
-            const datetimeEnd = this.datetimeHandler(dateObj, timeEnd);
+            const datetimeEnd = dateService.datetimeHandler(dateObj, timeEnd);
 
             if (datetimeStart >= datetimeEnd) {
                 throw new Error("'datetimeEnd' must be after 'datetimeStart'")
@@ -57,13 +43,13 @@ export default class EventService{
 
     editEvent = async (eventId, editedEvent) => {
         const {name, description, date, timeStart, timeEnd} = editedEvent;
-        const dateObj = this.dateHandler(date);
+        const dateObj = dateService.dateHandler(date);
         if (editedEvent.allDay) {
             await Event.updateOne({_id: eventId}, {name, description, date: date, datetimeStart: null, datetimeEnd: null});
         } else {
-            const datetimeStart = this.datetimeHandler(dateObj, timeStart);
+            const datetimeStart = dateService.datetimeHandler(dateObj, timeStart);
 
-            const datetimeEnd = this.datetimeHandler(dateObj, timeEnd);
+            const datetimeEnd = dateService.datetimeHandler(dateObj, timeEnd);
 
             if (datetimeStart >= datetimeEnd) {
                 throw new Error("'datetimeEnd' must be after 'datetimeStart'")

@@ -33,6 +33,7 @@ const validateRegister = [
 const validateCost = [
     body("name").notEmpty().withMessage("Nazwa kosztu jest wymagana"),
     body("cost").notEmpty().withMessage("Wprowadzenie kosztu jest wymagane"),
+    body("date").notEmpty().withMessage("Należy podać datę"),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

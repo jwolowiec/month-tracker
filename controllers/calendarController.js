@@ -1,4 +1,4 @@
-import {eventService} from "../services.js";
+import {dateService, eventService} from "../services.js";
 
 const calendarPage = (req, res) => {
     const today = new Date();
@@ -6,9 +6,9 @@ const calendarPage = (req, res) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
 
-    const currentDate = eventService.yearAndMonthISOFormat(year, month);
-    const previousDate = eventService.yearAndMonthISOFormat(month === 1 ? year - 1 : year, month === 1 ? 12 : month - 1);
-    const nextDate = eventService.yearAndMonthISOFormat(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1);
+    const currentDate = dateService.yearAndMonthISOFormat(year, month);
+    const previousDate = dateService.yearAndMonthISOFormat(month === 1 ? year - 1 : year, month === 1 ? 12 : month - 1);
+    const nextDate = dateService.yearAndMonthISOFormat(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1);
 
     res.render("pages/actions/calendar/calendar", {currentDate, previousDate, nextDate});
 };

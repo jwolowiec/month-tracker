@@ -13,6 +13,6 @@ router.post("/:date/add-event", validateMiddleware.validateEvent, calendarContro
 router.get("/:date/delete/:id", calendarController.deleteEvent);
 
 router.get("/:date/edit/:id", calendarController.editEventPage);
-router.post("/:date/edit/:id", calendarController.editEvent);
+router.post("/:date/edit/:id", validateMiddleware.validateEvent, calendarController.editEvent);
 
 export default router;

@@ -2,6 +2,7 @@
 <html lang="pl">
 <head>
     <%- include("../../../partials/head"); %>
+    <link href="/css/costs/style.css" rel="stylesheet">
     <title>Koszty</title>
 </head>
 <body>
@@ -10,19 +11,31 @@
     <main>
         <h1>Witamy na stronie kosztów</h1>
 
-        <form method="get" action="/costs" id="filterForm">
+        <div id="costs-head-wrapper">
+            <% const [year, month] = currentDate.split("-"); %>
+            <a href="/costs/<%= previousDate %>">Poprzedni miesiąc</a>
+            <h2 id="date"><%= month %>-<%= year %></h2>
+            <a href="/costs/<%= nextDate %>">Następny miesiąc</a>
+        </div>
+
+        <form method="get" action="/costs/<%= currentDate %>" id="filterForm">
             <% categories.forEach((category) => { %>
                 <input type="checkbox" name="categories" value="<%= category %>" <%= checkedCategories.includes(category) ? "checked" : "" %>>
                 <label><%= category %></label>
             <% }) %>
         </form>
 
+        <input type="button" id="reset" value="Resetuj">
+
         <% if (costs.length > 0) {
             costs.forEach((cost) => { %>
                 <h3><%= cost.name %></h3>
                 <h4><%= cost.description %></h4>
                 <p><%= cost.cost %></p>
+                <p><%= cost.date %></p>
                 <p><%= cost.category %></p>
+                <a href="/costs/edit/<%= cost._id %>">Edytuj</a>
+                <a href="/costs/delete/<%= cost._id %>">Usuń</a>
             <% });
         } else { %>
             <p>Brak wprowadzonych kosztów</p>

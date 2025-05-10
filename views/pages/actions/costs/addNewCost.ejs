@@ -17,6 +17,8 @@
             <textarea id="description" name="description"></textarea>
             <label for="cost">Podaj koszt</label>
             <input type="number" id="cost" name="cost" required>
+            <label for="date">Podaj datę</label>
+            <input type="date" id="date" name="date" value="<%= new Date().toISOString().split("T")[0] %>" required>
             <select name="category">
                 <% categories.forEach((category) => { %>
                     <option value="<%= category %>" <%= category === "Nieplanowane" ? "selected" : "" %>><%= category %></option>

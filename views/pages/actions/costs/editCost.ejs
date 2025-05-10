@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../../partials/head"); %>
+    <title>Koszty</title>
+</head>
+<body>
+<%- include("../../../partials/header"); %>
+
+<main>
+    <h1>Witamy na stronie edycji kosztów</h1>
+
+    <form method="post" action="/costs/edit/<%= cost._id %>">
+        <label for="name">Podaj nazwę</label>
+        <input type="text" id="name" name="name" value="<%= cost.name %>" required>
+        <label for="description">Podaj opis</label>
+        <textarea id="description" name="description" ><%= cost.description %></textarea>
+        <label for="cost">Podaj koszt</label>
+        <input type="number" id="cost" name="cost" value="<%= cost.cost %>" required>
+        <label for="date">Podaj datę</label>
+        <input type="date" id="date" name="date" value="<%= cost.date %>" required>
+        <select name="category">
+            <% categories.forEach((category) => { %>
+                <option value="<%= category %>" <%= category === cost.category ? "selected" : "" %>><%= category %></option>
+            <% }) %>
+        </select>
+        <input type="submit" value="Zapisz">
+    </form>
+
+</main>
+
+<%- include("../../../partials/footer"); %>
+</body>
+</html>
