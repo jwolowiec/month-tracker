@@ -41,7 +41,7 @@ const validateCost = [
             error.status = 400;
             return next(error);
         }
-        next()
+        next();
     }
 ];
 
@@ -54,7 +54,22 @@ const validateEvent = [
             error.status = 400;
             return next(error);
         }
-        next()
+        next();
+    }
+];
+
+const validateMail = [
+    body("mail").isEmail().withMessage("Podaj poprawny adres e-mail"),
+    body("subject").notEmpty().withMessage("Podaj temat maila"),
+    body("content").notEmpty().withMessage().withMessage("Podaj treść wiadomości"),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const error = new Error("Validation error");
+            error.status = 400;
+            return next(error);
+        }
+        next();
     }
 ];
 
@@ -63,4 +78,5 @@ export const validateMiddleware = {
     validateRegister,
     validateCost,
     validateEvent,
+    validateMail,
 };

@@ -3,7 +3,7 @@ import "dotenv/config";
 import connectToDB from "./config/db.js";
 import homeRoutes from "./routes/homeRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import authorRoutes from "./routes/authorRoutes.js";
+import aboutRoutes from "./routes/aboutRoutes.js";
 import monthlyCostRoutes from "./routes/monthlyCostRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import {errorHandler} from "./middleware/errorHandler.js";
@@ -26,7 +26,7 @@ app.use(cookieParser());
 //     app.use("/", homeRoutes);
 //     app.use("/costs", monthlyCostRoutes);
 //     app.use("/calendar", calendarRoutes);
-//     app.use("/author", authorRoutes);
+//     app.use("/about", aboutRoutes);
 //     app.use("/authMiddleware", authRoutes);
 // } catch (e) {
 //     app.use("/*", (req, res) => {
@@ -39,7 +39,7 @@ app.use(userMiddleware.setUser);
 app.use("/", homeRoutes);
 app.use("/costs", authMiddleware.authUser, monthlyCostRoutes);
 app.use("/calendar", authMiddleware.authUser, calendarRoutes);
-app.use("/author", authorRoutes);
+app.use("/about", aboutRoutes);
 app.use("/auth", authRoutes);
 app.use("/user", authMiddleware.authUser, userRoutes);
 

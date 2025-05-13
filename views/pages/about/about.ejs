@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../partials/head"); %>
+    <link rel="stylesheet" href="/css/about/style.css">
+    <title>O mnie</title>
+</head>
+<body>
+    <%- include("../../partials/header"); %>
+
+    <main>
+        <h1>Witaj na stronie o mnie</h1>
+
+        <article>
+            <section id="about">
+                <img alt="moje zdjęcie" src="">
+                <h3>O mnie</h3>
+                <p>
+                    Jestem studentem informatyki, który interesuje się programowaniem i rozwija się w kierunku
+                    zostania backend developerem.
+                </p>
+            </section>
+
+            <section id="contact">
+                <h3>Formularz kontaktowy</h3>
+                <form method="post" action="/about/mail">
+                    <label for="mail">Mail</label>
+                    <input type="email" name="mail" id="mail">
+                    <label for="subject">Temat</label>
+                    <input type="text" name="subject" id="subject">
+                    <label for="content">Wiadomość</label>
+                    <textarea name="content" id="content"></textarea>
+                    <input type="submit" value="Wyślij">
+                </form>
+            </section>
+        </article>
+
+    </main>
+
+    <%- include("../../partials/footer"); %>
+</body>
+</html>
