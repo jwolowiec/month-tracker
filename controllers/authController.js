@@ -1,6 +1,6 @@
 import {authService} from "../services.js";
 
-const loginPage = (req, res) => {
+const showLoginPage = (req, res) => {
     const mail = req.query.mail || "";
     const message = req.query.message || "";
 
@@ -8,9 +8,9 @@ const loginPage = (req, res) => {
 };
 
 const authLogin = async (req, res, next) => {
-    const {mail, password} = req.body;
-    const deviceInfo = req.headers["user-agent"];
     try {
+        const {mail, password} = req.body;
+        const deviceInfo = req.headers["user-agent"];
         const {accessToken, refreshToken} = await authService.login(mail, password, deviceInfo);
 
         res.cookie("accessToken", accessToken, {
@@ -28,19 +28,18 @@ const authLogin = async (req, res, next) => {
         res.redirect("/");
 
     } catch (e) {
-        const error = new Error(e);
-        next(error);
+        next(e);
     }
 };
 
-const registerPage = (req, res) => {
+const showRegisterPage = (req, res) => {
     res.render("pages/auth/register");
 };
 
 const authRegister = async (req, res, next) => {
-    const user = req.body;
-    const deviceInfo = req.headers["user-agent"];
     try {
+        const user = req.body;
+        const deviceInfo = req.headers["user-agent"];
         const {accessToken, refreshToken} = await authService.register(user, deviceInfo);
 
         res.cookie("accessToken", accessToken, {
@@ -57,44 +56,27 @@ const authRegister = async (req, res, next) => {
         });
         res.redirect(`/`);
     } catch (e) {
-        const error = new Error(e);
-        next(error);
-    }
-};
-
-const refreshAuthToken = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
-    try {
-        const result = await authService.refreshAccessToken(refreshToken);
-
-        if (!result.token) {
-            return res.status(result.status).json({message: result.message});
-        }
-
-        res.json({accessToken: result.token})
-    } catch (e) {
-        res.status(401).json({message: e.message});
+        next(e);
     }
 };
 
 const logOut = async (req, res, next) => {
-    const refreshToken = req.cookies.refreshToken;
     try {
+        const refreshToken = req.cookies.refreshToken;
         await authService.logOut(refreshToken);
+
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        res.redirect("/");
     } catch (e) {
-        const error = new Error(e);
-        next(error);
+        next(e);
     }
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
-    res.redirect("/");
 };
 
 export const authController = {
-    loginPage,
+    showLoginPage,
     authLogin,
-    registerPage,
+    showRegisterPage,
     authRegister,
-    refreshAuthToken,
     logOut,
 };

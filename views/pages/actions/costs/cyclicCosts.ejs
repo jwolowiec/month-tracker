@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../../../partials/head"); %>
+    <title>Koszty</title>
+</head>
+<body>
+<%- include("../../../partials/header"); %>
+
+<main>
+    <h1>Witamy na stronie cyklicznych kosztów</h1>
+
+    <% if (cyclicCosts.length > 0) {
+    cyclicCosts.forEach((cyclicCost) => { %>
+        <h3><%= cyclicCost.name %></h3>
+        <h4><%= cyclicCost.description %></h4>
+        <p><%= cyclicCost.cost %></p>
+        <p><%= cyclicCost.date %></p>
+        <p><%= cyclicCost.category %></p>
+        <a href="/costs/cyclic-costs/edit/<%= cyclicCost._id %>">Edytuj</a>
+        <a href="/costs/cyclic-costs/delete/<%= cyclicCost._id %>">Usuń</a>
+    <% });
+    } else { %>
+        <p>Brak wprowadzonych kosztów</p>
+    <% } %>
+    <a href="/costs/cyclic-costs/add-cost">Dodaj nowy koszt</a>
+</main>
+
+<script src="/js/costs/sendFormAfterChange.js"></script>
+
+<%- include("../../../partials/footer"); %>
+</body>
+</html>

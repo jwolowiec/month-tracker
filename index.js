@@ -21,27 +21,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// try {
-//     await connectToDB();
-//     app.use("/", homeRoutes);
-//     app.use("/costs", monthlyCostRoutes);
-//     app.use("/calendar", calendarRoutes);
-//     app.use("/about", aboutRoutes);
-//     app.use("/authMiddleware", authRoutes);
-// } catch (e) {
-//     app.use("/*", (req, res) => {
-//         res.status(500).send("nie");
-//     });
-// }
-
-await connectToDB();
-app.use(userMiddleware.setUser);
-app.use("/", homeRoutes);
-app.use("/costs", authMiddleware.authUser, monthlyCostRoutes);
-app.use("/calendar", authMiddleware.authUser, calendarRoutes);
-app.use("/about", aboutRoutes);
-app.use("/auth", authRoutes);
-app.use("/user", authMiddleware.authUser, userRoutes);
+try {
+    await connectToDB();
+    app.use(userMiddleware.setUser);
+    app.use("/", homeRoutes);
+    app.use("/about", aboutRoutes);
+    app.use("/auth", authRoutes);
+    app.use("/costs", authMiddleware.authUser, monthlyCostRoutes);
+    app.use("/calendar", authMiddleware.authUser, calendarRoutes);
+    app.use("/user", authMiddleware.authUser, userRoutes);
+} catch (e) {
+    app.use("/*", (req, res, next) => {
+        //res.sendStatus(503);
+        next(e);
+    });
+}
 
 app.use(errorHandler.notFound);
 app.use(errorHandler.errorHandlerMiddleware);

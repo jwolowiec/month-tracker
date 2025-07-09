@@ -1,7 +1,7 @@
 import Cost from "../models/Cost.js";
 
 export default class CostService{
-    findAllCosts = (userId, date, checkedCategories) => {
+    findAllCosts(userId, date, checkedCategories) {
         const query = {
             user: userId,
             date: { $regex: new RegExp(`^${date}`) },
@@ -10,23 +10,23 @@ export default class CostService{
         return Cost.find(query);
     };
 
-    findCostById = (costId) => {
+    findCostById(costId) {
         return Cost.findOne({_id: costId});
     };
 
-    addNewCost = async (newCost) => {
+    async addNewCost(newCost) {
         await Cost.create(newCost);
     };
 
-    editCost = async (costId, newCost) => {
+    async editCost(costId, newCost) {
         await Cost.updateOne({_id: costId}, newCost);
     };
 
-    deleteCost = async (costId) => {
+    async deleteCost(costId) {
         await Cost.deleteOne({_id: costId});
     };
 
-    getCostsCategories = () => {
+    getCostsCategories() {
         return Cost.schema.path("category").enumValues;
     };
 }

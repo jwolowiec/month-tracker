@@ -1,87 +1,90 @@
 import {dateService, eventService} from "../services.js";
 
-const calendarPage = (req, res) => {
-    const today = new Date();
-    const date = Object.keys(req.query).length === 1 ? new Date(req.query.date) : today;
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-
-    const currentDate = dateService.yearAndMonthISOFormat(year, month);
-    const previousDate = dateService.yearAndMonthISOFormat(month === 1 ? year - 1 : year, month === 1 ? 12 : month - 1);
-    const nextDate = dateService.yearAndMonthISOFormat(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1);
+const showCalendarPage = (req, res) => {
+    const dateArray = [req.query.year, req.query.month];
+    const today = dateService.getCurrentDate();
+    const currentDate = Object.keys(req.query).length === 0 ? today : dateService.getDateByArray(dateArray);
+    const previousDate = dateService.subtractFromDate(currentDate, 1, 'M');
+    const nextDate = dateService.addToDate(currentDate, 1, 'M');
 
     res.render("pages/actions/calendar/calendar", {currentDate, previousDate, nextDate});
 };
 
-const datePage = async (req, res, next) => {
-    const date = req.params.date;
-    const userId = res.locals.user;
-    let events = [];
+const showDatePage = async (req, res, next) => {
     try {
-        events = await eventService.findAllEvents(userId, date);
+        const date = req.params.date;
+        const userId = res.locals.user;
+        const events = await eventService.findAllEvents(userId, date);
+
+        res.render("pages/actions/calendar/date", {date, events});
     } catch (e) {
-        return next(e);
+        next(e);
     }
-    res.render("pages/actions/calendar/date", {date, events});
 };
 
-const addNewEventPage = (req, res) => {
+const showAddNewEventPage = (req, res) => {
     const date = req.params.date;
     res.render("pages/actions/calendar/addNewEvent", {date});
 };
 
 const addNewEvent = async (req, res, next) => {
-    const date = req.params.date;
-    const userId = res.locals.user._id;
-    const newEvent = req.body;
     try {
+        const date = req.params.date;
+        const userId = res.locals.user._id;
+        const newEvent = req.body;
+
         await eventService.addNewEvent(userId, date, newEvent);
+
+        res.redirect(`/calendar/${date}`);
     } catch (e) {
-        return next(e);
+        next(e);
     }
-    res.redirect(`/calendar/${date}`);
 };
 
 const deleteEvent = async (req, res, next) => {
-    const date = req.params.date;
-    const eventId = req.params.id;
     try {
+        const date = req.params.date;
+        const eventId = req.params.id;
+
         await eventService.deleteEvent(eventId);
+
+        res.redirect(`/calendar/${date}`);
     } catch (e) {
-        return next(e);
+        next(e);
     }
-    res.redirect(`/calendar/${date}`);
 };
 
-const editEventPage = async (req, res, next) => {
-    const date = req.params.date
-    const eventId = req.params.id;
-    let oldEvent;
+const showEditEventPage = async (req, res, next) => {
     try {
-        oldEvent = await eventService.findEventById(eventId);
+        const date = req.params.date
+        const eventId = req.params.id;
+        const oldEvent = await eventService.findEventById(eventId);
+
+        res.render("pages/actions/calendar/editEvent", {oldEvent, date});
     } catch (e) {
-        return next(e);
+        next(e);
     }
-    res.render("pages/actions/calendar/editEvent", {oldEvent, date});
 };
 
 const editEvent = async (req, res, next) => {
-    const eventId = req.params.id;
-    const newEvent = req.body;
     try {
+        const eventId = req.params.id;
+        const newEvent = req.body;
+
         await eventService.editEvent(eventId, newEvent);
+
+        res.redirect(`/calendar/${newEvent.date}`);
     } catch (e) {
-        return next(e);
+        next(e);
     }
-    res.redirect(`/calendar/${newEvent.date}`);
 }
 
 export const calendarController = {
-    calendarPage,
-    datePage,
-    addNewEventPage,
+    showCalendarPage,
+    showDatePage,
+    showAddNewEventPage,
     addNewEvent,
     deleteEvent,
-    editEventPage,
+    showEditEventPage,
     editEvent,
 };

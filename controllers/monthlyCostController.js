@@ -1,25 +1,24 @@
 import {costService, dateService} from "../services.js";
 
-const monthlyCostPage = async (req, res, next) => {
-    const checkedCategories = req.query.categories ? Array.isArray(req.query.categories) ? req.query.categories : [req.query.categories] : [];
-    const today = new Date();
-    const date = req.params.date !== undefined ? new Date(req.params.date) : today;
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const userId = req.user._id;
-    let costs;
-    const categories = costService.getCostsCategories();
-
-    const currentDate = dateService.yearAndMonthISOFormat(year, month);
-    const previousDate = dateService.yearAndMonthISOFormat(month === 1 ? year - 1 : year, month === 1 ? 12 : month - 1);
-    const nextDate = dateService.yearAndMonthISOFormat(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1);
-
+const showMonthlyCostPage = async (req, res, next) => {
     try {
-        costs = await costService.findAllCosts(userId, currentDate, checkedCategories);
+        const checkedCategories = req.query.categories ? Array.isArray(req.query.categories) ? req.query.categories : [req.query.categories] : [];
+        const userId = req.user._id;
+        const categories = costService.getCostsCategories();
+
+        const today = dateService.getCurrentDate();
+        const dateArray = [req.query.year, req.query.month];
+
+        const currentDate = req.query.year === undefined || req.query.month === undefined ? today : dateService.getDateByArray(dateArray);
+        const previousDate = dateService.subtractFromDate(currentDate, 1, 'M');
+        const nextDate = dateService.addToDate(currentDate, 1, 'M');
+
+        const costs = await costService.findAllCosts(userId, currentDate.format('YYYY-MM'), checkedCategories);
+
+        res.render("pages/actions/costs/costs", {costs, categories, checkedCategories, currentDate, previousDate, nextDate});
     } catch (e) {
-        return next(e);
+        next(e);
     }
-    res.render("pages/actions/costs/costs", {costs, categories, checkedCategories, currentDate, previousDate, nextDate});
 };
 
 const addNewCostPage = (req, res) => {
@@ -28,54 +27,63 @@ const addNewCostPage = (req, res) => {
 };
 
 const addNewCost = async (req, res, next) => {
-    const cost = req.body;
-    cost.user = req.user._id;
     try {
+        const cost = req.body;
+        cost.user = req.user._id;
         await costService.addNewCost(cost);
+
+        res.redirect("/costs");
     } catch (e) {
         return next(e);
     }
-    res.redirect("/costs");
 };
 
-const editCostPage = async (req, res, next) => {
-    const costId = req.params.id;
-    const categories = costService.getCostsCategories();
-    let cost;
+const showEditCostPage = async (req, res, next) => {
     try {
-        cost = await costService.findCostById(costId);
+        const costId = req.params.id;
+        const categories = costService.getCostsCategories();
+        const cost = await costService.findCostById(costId);
+
+        res.render("pages/actions/costs/editCost", {cost, categories});
     } catch (e) {
         return next(e);
     }
-    res.render("pages/actions/costs/editCost", {cost, categories});
 };
 
 const editCost = async (req, res, next) => {
-    const cost = req.body;
-    const costId = req.params.id;
     try {
+        const cost = req.body;
+        const costId = req.params.id;
         await costService.editCost(costId, cost);
+
+        res.redirect("/costs");
     } catch (e) {
         return next(e);
     }
-    res.redirect("/costs");
+};
+
+const showCyclicCostPage = (req, res, next) => {
+    const cyclicCosts = [];
+    res.render("pages/actions/costs/cyclicCosts", {cyclicCosts});
 };
 
 const deleteCost = async (req, res, next) => {
-    const costId = req.params.id;
     try {
+        const costId = req.params.id;
         await costService.deleteCost(costId);
+
+        res.redirect("/costs");
     } catch (e) {
         return next(e);
     }
-    res.redirect("/costs");
 };
 
 export const monthlyCostController = {
-    monthlyCostPage,
+    showMonthlyCostPage,
     addNewCostPage,
     addNewCost,
-    editCostPage,
+    showEditCostPage,
     editCost,
+    showCyclicCostPage,
     deleteCost,
 };

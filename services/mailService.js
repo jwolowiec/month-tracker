@@ -1,7 +1,7 @@
 import transporter from "../config/nodemailer.js";
 
 export default class MailService{
-    sendMail = async (mail) => {
+    async sendMail(mail) {
         await transporter.sendMail({
             from: process.env.MAIL,
             to: process.env.MAIL,

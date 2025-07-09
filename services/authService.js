@@ -1,7 +1,7 @@
 import {tokenService, userService} from "../services.js";
 
 export default class AuthService{
-    login = async (mail, password, deviceInfo) => {
+    async login(mail, password, deviceInfo) {
         const user = await userService.findUserByMail(mail, deviceInfo);
 
         if (!user) {
@@ -29,7 +29,7 @@ export default class AuthService{
         return {accessToken, refreshToken};
     };
 
-    register = async (user, deviceInfo) => {
+     async register(user, deviceInfo) {
         const checkUser = await userService.findUserByMail(user.mail);
 
         if (checkUser) {
@@ -49,51 +49,46 @@ export default class AuthService{
         return {accessToken, refreshToken};
     };
 
-    refreshAccessToken = async (refreshToken) => {
+     async refreshAccessToken(refreshToken) {
         if (!refreshToken) {
-            return {token: undefined, message: "Missing refresh token", status: 400};
+            const error = new Error("Missing refresh token");
+            error.status = 400;
+            throw error;
         }
 
         const refreshTokenDB = await tokenService.findValidRefreshToken(refreshToken);
 
         if (!refreshTokenDB) {
-            return {token: undefined, message: "No valid token in database", status: 401};
+            const error = new Error("No valid token in database");
+            error.status = 401;
+            throw error;
         }
 
         if (!refreshTokenDB.userId) {
-            return {token: undefined, message: "No user in database", status: 401};
+            const error = new Error("No user in database");
+            error.status = 401;
+            throw error;
         }
 
         const decoded = tokenService.verifyRefreshToken(refreshToken);
         if (!decoded) {
-            return {token: undefined, message: "Invalid refresh token", status: 401};
+            const error = new Error("Invalid refresh token");
+            error.status = 401;
+            throw error;
         }
 
-        const result = tokenService.generateAccessToken(refreshTokenDB.userId);
-
-        return {token: result};
+        return tokenService.generateAccessToken(refreshTokenDB.userId);
     };
 
-    logOut = async (refreshToken) => {
+     async logOut(refreshToken) {
         await tokenService.expireRefreshTokenByLogOut(refreshToken);
     };
 
-    authentication = async (accessToken, refreshToken, url) => {
+     async authentication(accessToken, refreshToken) {
         let validAccessToken = accessToken;
 
         if (!accessToken) {
-            const response = await fetch(url, {
-                method: "post",
-                credentials: "include",
-                headers: { "Content-Type": "application/json", "Cookie": `refreshToken=${refreshToken}`},
-            });
-            const data = await response.json();
-            if (data.message) {
-                const error = new Error(data.message);
-                error.status = data.status;
-                throw error;
-            }
-            validAccessToken = data.accessToken;
+            validAccessToken = await this.refreshAccessToken(refreshToken);
         }
 
         const accessTokenDecoded = tokenService.verifyAccessToken(validAccessToken);

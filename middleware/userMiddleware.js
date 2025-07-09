@@ -1,19 +1,13 @@
 import {authService} from "../services.js";
 
 const setUser = async (req, res, next) => {
-    const accessToken = req.cookies.accessToken;
-    const refreshToken = req.cookies.refreshToken;
-    req.user = null;
-    res.locals.user = null;
-
-    if (req.path === "/auth/refresh") {
-        return next();
-    }
-
     try {
-        const url = req.protocol + "://" + req.get("host") + "/auth/refresh";
+        const accessToken = req.cookies.accessToken;
+        const refreshToken = req.cookies.refreshToken;
+        req.user = null;
+        res.locals.user = null;
 
-        const {validAccessToken, accessTokenDecoded} = await authService.authentication(accessToken, refreshToken, url);
+        const {validAccessToken, accessTokenDecoded} = await authService.authentication(accessToken, refreshToken);
 
         if (accessTokenDecoded) {
             req.user = accessTokenDecoded.user;
@@ -28,11 +22,12 @@ const setUser = async (req, res, next) => {
                 });
             }
         }
-        return next();
     } catch (e) {
+        req.authError = e;
         req.user = null;
         res.locals.user = null;
-        return next();
+    } finally {
+        next();
     }
 };
 

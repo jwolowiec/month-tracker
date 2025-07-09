@@ -4,7 +4,7 @@ import {validateMiddleware} from "../middleware/validateMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", aboutController.aboutPage);
+router.get("/", aboutController.showAboutPage);
 
 router.post("/mail", validateMiddleware.validateMail, aboutController.sendMail);
 

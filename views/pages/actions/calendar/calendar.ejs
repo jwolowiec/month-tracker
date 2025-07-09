@@ -11,10 +11,9 @@
     <main>
         <h1>Witamy na stronie kalendarza</h1>
         <div id="calendar-head-wrapper">
-            <% const [year, month] = currentDate.split("-"); %>
-            <a href="/calendar?date=<%= previousDate %>">Poprzedni miesiąc</a>
-            <h2 id="date"><%= month %>-<%= year %></h2>
-            <a href="/calendar?date=<%= nextDate %>">Następny miesiąc</a>
+            <a href="/calendar?month=<%= previousDate.month() %>&year=<%= previousDate.year() %>">Poprzedni miesiąc</a>
+            <h2 id="date"><%= currentDate.format('MM-YYYY') %></h2>
+            <a href="/calendar?month=<%= nextDate.month() %>&year=<%= nextDate.year() %>">Następny miesiąc</a>
         </div>
         <div id="calendar">
 
@@ -23,6 +22,7 @@
 
     <%- include("../../../partials/footer") %>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
     <script src="/js/calendar/drawCalendar.js"></script>
 </body>
 </html>

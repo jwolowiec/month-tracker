@@ -12,13 +12,14 @@
         <h1>Witamy na stronie kosztów</h1>
 
         <div id="costs-head-wrapper">
-            <% const [year, month] = currentDate.split("-"); %>
-            <a href="/costs/<%= previousDate %>">Poprzedni miesiąc</a>
-            <h2 id="date"><%= month %>-<%= year %></h2>
-            <a href="/costs/<%= nextDate %>">Następny miesiąc</a>
+            <a href="/costs?month=<%= previousDate.month() %>&year=<%= previousDate.year() %>">Poprzedni miesiąc</a>
+            <h2 id="date"><%= currentDate.format('MM-YYYY') %></h2>
+            <a href="/costs?month=<%= nextDate.month() %>&year=<%= nextDate.year() %>">Następny miesiąc</a>
         </div>
 
-        <form method="get" action="/costs/<%= currentDate %>" id="filterForm">
+        <form method="get" action="/costs" id="filterForm">
+            <input type="hidden" name="month" value="<%= currentDate.month() %>">
+            <input type="hidden" name="year" value="<%= currentDate.year() %>">
             <% categories.forEach((category) => { %>
                 <input type="checkbox" name="categories" value="<%= category %>" <%= checkedCategories.includes(category) ? "checked" : "" %>>
                 <label><%= category %></label>
@@ -41,6 +42,7 @@
             <p>Brak wprowadzonych kosztów</p>
         <% } %>
         <a href="/costs/add-cost">Dodaj nowy koszt</a>
+        <a href="/costs/cyclic-costs">Pokaż wszystkie cykliczne koszty</a>
     </main>
 
     <script src="/js/costs/sendFormAfterChange.js"></script>

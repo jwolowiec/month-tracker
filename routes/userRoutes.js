@@ -3,8 +3,8 @@ import {userController} from "../controllers/userController.js";
 
 const router = express.Router();
 
-router.get("/", userController.userPage);
-router.get("/edit", userController.editUserPage);
+router.get("/", userController.showUserPage);
+router.get("/edit", userController.showEditUserPage);
 router.post("/edit", userController.editUser);
 
 export default router;
